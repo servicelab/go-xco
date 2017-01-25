@@ -10,11 +10,11 @@ import (
 
 func (c *Component) handshakeState() (st stateFn, err error) {
 
-	if _, err = c.conn.Write([]byte(fmt.Sprintf(`
+	if _, err = fmt.Fprintf(c.conn, `
 		<stream:stream
 			xmlns='jabber:component:accept'
 			xmlns:stream='http://etherx.jabber.org/streams'
-			to='%s'>`, c.name))); err != nil {
+			to='%s'>`, c.name); err != nil {
 		return
 	}
 
@@ -44,7 +44,7 @@ func (c *Component) handshakeState() (st stateFn, err error) {
 		handshakeInput := id + c.sharedSecret
 		handshake := sha1.Sum([]byte(handshakeInput))
 		hexHandshake := hex.EncodeToString(handshake[:])
-		if _, err = c.conn.Write([]byte(fmt.Sprintf("<handshake>%s</handshake>", hexHandshake))); err != nil {
+		if _, err = fmt.Fprintf(c.conn, "<handshake>%s</handshake>", hexHandshake); err != nil {
 			return
 		}
 
