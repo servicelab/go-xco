@@ -33,9 +33,13 @@ type Message struct {
 	Type MessageType `xml:"type,attr,omitempty"`
 
 	Subject string `xml:"subject,omitempty"`
-	Body    string `xml:"body"`
+	Body    string `xml:"body,omitempty"`
 	Error   *Error `xml:"error"`
 	Thread  string `xml:"thread,omitempty"`
+
+	// XEP-0184 message delivery receipts
+	ReceiptRequest *xml.Name   `xml:"urn:xmpp:receipts request,omitempty"`
+	ReceiptAck     *ReceiptAck `xml:"urn:xmpp:receipts received,omitempty"`
 
 	XMLName xml.Name
 }
