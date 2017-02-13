@@ -172,13 +172,19 @@ func (c *Component) runReadLoop() {
 	}()
 
 	var err error
+LOOP:
 	for {
-		if c.stateFn == nil {
-			break
-		}
-		c.stateFn, err = c.stateFn()
-		if err != nil {
-			break
+		select {
+		case _ = <-c.ctx.Done():
+			break LOOP
+		default:
+			if c.stateFn == nil {
+				break LOOP
+			}
+			c.stateFn, err = c.stateFn()
+			if err != nil {
+				break LOOP
+			}
 		}
 	}
 
