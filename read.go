@@ -23,52 +23,34 @@ func (c *Component) readLoopState() (stateFn, error) {
 			if err := c.dec.DecodeElement(&m, &st); err != nil {
 				return nil, err
 			}
-
-			if err := c.MessageHandler(c, &m); err != nil {
-				return nil, err
-			}
+			c.rx <- &m
 		} else if st.Name.Local == "presence" {
 			var p Presence
 			if err := c.dec.DecodeElement(&p, &st); err != nil {
 				return nil, err
 			}
-
-			if err := c.PresenceHandler(c, &p); err != nil {
-				return nil, err
-			}
+			c.rx <- &p
 		} else if st.Name.Local == "iq" {
-
 			var iq Iq
 			if err := c.dec.DecodeElement(&iq, &st); err != nil {
 				return nil, err
 			}
-
-			// recognize XEP-0030 service discovery info queries
-			if iq.IsDiscoInfo() {
-				return c.discoInfo(&iq)
-			}
-
-			// handle all other iq stanzas
-			if err := c.IqHandler(c, &iq); err != nil {
-				return nil, err
-			}
+			c.rx <- &iq
 		} else {
-			if err := c.UnknownHandler(c, &st); err != nil {
-				return nil, err
-			}
+			c.rx <- &st
 		}
 	}
 
 	return c.readLoopState, nil
 }
 
-func (c *Component) discoInfo(iq *Iq) (stateFn, error) {
+func (c *Component) discoInfo(iq *Iq, tx chan<- interface{}) error {
 	ids, features, err := c.DiscoInfoHandler(c, iq)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if len(ids) < 1 {
-		return c.readLoopState, nil
+		return nil
 	}
 
 	features = append(features, DiscoFeature{
@@ -80,7 +62,7 @@ func (c *Component) discoInfo(iq *Iq) (stateFn, error) {
 	}
 	queryContent, err := xml.Marshal(query)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	resp := &Iq{
 		Header: Header{
@@ -92,9 +74,7 @@ func (c *Component) discoInfo(iq *Iq) (stateFn, error) {
 		Content: string(queryContent),
 		XMLName: iq.XMLName,
 	}
-	if err := c.Send(resp); err != nil {
-		return nil, err
-	}
+	tx <- resp
 
-	return c.readLoopState, nil
+	return nil
 }
