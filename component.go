@@ -96,7 +96,7 @@ func (c *Component) Run() (err error) {
 					var features []DiscoFeature
 					ids, features, err = c.DiscoInfoHandler(c, x)
 					if err == nil {
-						x, err = x.discoInfo(ids, features)
+						x, err = x.DiscoInfoReply(ids, features)
 						if err == nil {
 							tx <- x
 						}

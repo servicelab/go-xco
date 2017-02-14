@@ -44,7 +44,10 @@ func (c *Component) readLoopState() (stateFn, error) {
 	return c.readLoopState, nil
 }
 
-func (iq *Iq) discoInfo(ids []DiscoIdentity, features []DiscoFeature) (*Iq, error) {
+// DiscoInfoReply returns a new Iq stanza which is a reply to the
+// given service discovery info stanza.  It only makes sense to call
+// this method if IsDiscoInfo returns true.
+func (iq *Iq) DiscoInfoReply(ids []DiscoIdentity, features []DiscoFeature) (*Iq, error) {
 	if len(ids) < 1 {
 		return nil, nil
 	}
