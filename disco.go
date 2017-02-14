@@ -47,6 +47,38 @@ func (iq *Iq) IsDiscoInfo() bool {
 	return false
 }
 
+// DiscoInfoReply returns a new Iq stanza which is a reply to the
+// given service discovery info stanza.  It only makes sense to call
+// this method if IsDiscoInfo returns true.
+func (iq *Iq) DiscoInfoReply(ids []DiscoIdentity, features []DiscoFeature) (*Iq, error) {
+	if len(ids) < 1 {
+		return nil, nil
+	}
+
+	features = append(features, DiscoFeature{
+		Var: discoInfoSpace,
+	})
+	query := DiscoInfoQuery{
+		Identities: ids,
+		Features:   features,
+	}
+	queryContent, err := xml.Marshal(query)
+	if err != nil {
+		return nil, err
+	}
+	resp := &Iq{
+		Header: Header{
+			From: iq.To,
+			To:   iq.From,
+			ID:   iq.ID,
+		},
+		Type:    "result",
+		Content: string(queryContent),
+		XMLName: iq.XMLName,
+	}
+	return resp, nil
+}
+
 // DiscoIdentity represents an identity element in a response to a
 // service discovery info query.
 type DiscoIdentity struct {
