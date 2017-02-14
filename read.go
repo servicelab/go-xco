@@ -44,11 +44,7 @@ func (c *Component) readLoopState() (stateFn, error) {
 	return c.readLoopState, nil
 }
 
-func (c *Component) discoInfo(iq *Iq) (*Iq, error) {
-	ids, features, err := c.DiscoInfoHandler(c, iq)
-	if err != nil {
-		return nil, err
-	}
+func (iq *Iq) discoInfo(ids []DiscoIdentity, features []DiscoFeature) (*Iq, error) {
 	if len(ids) < 1 {
 		return nil, nil
 	}

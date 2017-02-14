@@ -92,9 +92,14 @@ func (c *Component) Run() (err error) {
 				err = c.PresenceHandler(c, x)
 			case *Iq:
 				if x.IsDiscoInfo() {
-					x, err = c.discoInfo(x)
+					var ids []DiscoIdentity
+					var features []DiscoFeature
+					ids, features, err = c.DiscoInfoHandler(c, x)
 					if err == nil {
-						tx <- x
+						x, err = x.discoInfo(ids, features)
+						if err == nil {
+							tx <- x
+						}
 					}
 				} else {
 					err = c.IqHandler(c, x)
