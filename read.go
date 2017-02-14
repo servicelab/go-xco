@@ -44,13 +44,13 @@ func (c *Component) readLoopState() (stateFn, error) {
 	return c.readLoopState, nil
 }
 
-func (c *Component) discoInfo(iq *Iq, tx chan<- interface{}) error {
+func (c *Component) discoInfo(iq *Iq) (*Iq, error) {
 	ids, features, err := c.DiscoInfoHandler(c, iq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(ids) < 1 {
-		return nil
+		return nil, nil
 	}
 
 	features = append(features, DiscoFeature{
@@ -62,7 +62,7 @@ func (c *Component) discoInfo(iq *Iq, tx chan<- interface{}) error {
 	}
 	queryContent, err := xml.Marshal(query)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	resp := &Iq{
 		Header: Header{
@@ -74,7 +74,5 @@ func (c *Component) discoInfo(iq *Iq, tx chan<- interface{}) error {
 		Content: string(queryContent),
 		XMLName: iq.XMLName,
 	}
-	tx <- resp
-
-	return nil
+	return resp, nil
 }
