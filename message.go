@@ -41,6 +41,9 @@ type Message struct {
 	ReceiptRequest *xml.Name   `xml:"urn:xmpp:receipts request,omitempty"`
 	ReceiptAck     *ReceiptAck `xml:"urn:xmpp:receipts received,omitempty"`
 
+	// XEP-0172 User nicknames
+	Nick string `xml:"http://jabber.org/protocol/nick nick,omitempty"`
+
 	XMLName xml.Name
 }
 
