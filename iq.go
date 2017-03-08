@@ -6,7 +6,7 @@ type Iq struct {
 
 	Type string `xml:"type,attr"`
 
-	Content string `xml:",innerxml"`
+	DiscoInfo *DiscoInfoQuery `xml:"http://jabber.org/protocol/disco#info query,omitempty"`
 
 	XMLName string `xml:"iq"`
 }

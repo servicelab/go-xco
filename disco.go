@@ -40,9 +40,7 @@ func (q *DiscoInfoQuery) isValid() bool {
 // info query.
 func (iq *Iq) IsDiscoInfo() bool {
 	if iq.Type == "get" {
-		var disco DiscoInfoQuery
-		err := xml.Unmarshal([]byte(iq.Content), &disco)
-		return err == nil && disco.isValid()
+		return iq.DiscoInfo != nil && iq.DiscoInfo.isValid()
 	}
 	return false
 }
@@ -62,19 +60,15 @@ func (iq *Iq) DiscoInfoReply(ids []DiscoIdentity, features []DiscoFeature) (*Iq,
 		Identities: ids,
 		Features:   features,
 	}
-	queryContent, err := xml.Marshal(query)
-	if err != nil {
-		return nil, err
-	}
 	resp := &Iq{
 		Header: Header{
 			From: iq.To,
 			To:   iq.From,
 			ID:   iq.ID,
 		},
-		Type:    "result",
-		Content: string(queryContent),
-		XMLName: iq.XMLName,
+		Type:      "result",
+		DiscoInfo: &query,
+		XMLName:   iq.XMLName,
 	}
 	return resp, nil
 }
