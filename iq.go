@@ -8,6 +8,8 @@ type Iq struct {
 
 	DiscoInfo *DiscoInfoQuery `xml:"http://jabber.org/protocol/disco#info query,omitempty"`
 
+	Vcard *Vcard `xml:"vcard-temp vCard,omitempty"`
+
 	XMLName string `xml:"iq"`
 }
 
