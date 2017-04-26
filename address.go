@@ -60,6 +60,9 @@ func (a *Address) UnmarshalXMLAttr(attr xml.Attr) error {
 
 // MarshalXMLAttr marks the Address struct as being able to be written as an XML attribute
 func (a *Address) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if a == nil {
+		return xml.Attr{}, nil
+	}
 	errs := a.validate()
 	if len(errs) != 0 {
 		return xml.Attr{}, fmt.Errorf("Malformed Address for Attribute %s: %s", name, errs)
@@ -75,7 +78,7 @@ func (a *Address) validate() []error {
 
 	var errs []error
 
-	if a.DomainPart == "" {
+	if a != nil && a.LocalPart != "" && a.DomainPart == "" {
 		errs = append(errs, errors.New("Domain is empty"))
 	}
 
@@ -89,7 +92,7 @@ func (a *Address) parse(s string) error {
 	s = strings.TrimSpace(s)
 
 	if len(s) == 0 {
-		return errors.New("Address is empty")
+		return nil //errors.New("Address is empty")
 	}
 
 	// parsing
