@@ -36,6 +36,7 @@ type Message struct {
 	Body    string `xml:"body,omitempty"`
 	Error   *Error `xml:"error"`
 	Thread  string `xml:"thread,omitempty"`
+	Content string `xml:",innerxml"` // allow arbitrary content
 
 	// XEP-0184 message delivery receipts
 	ReceiptRequest *xml.Name   `xml:"urn:xmpp:receipts request,omitempty"`
