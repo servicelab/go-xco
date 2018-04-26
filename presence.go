@@ -65,6 +65,6 @@ func AlwaysOnlinePresenceHandler(c *Component, p *Presence) error {
 // ToAddressPresenceHandler calls the function with the To address
 func ToAddressPresenceHandler(fn func(subject Address) error) PresenceHandler {
 	return func(c *Component, p *Presence) error {
-		return fn(p.To)
+		return fn(*p.To)
 	}
 }
